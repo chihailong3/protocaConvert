@@ -130,6 +130,24 @@ def udp_broadcast_test():
 
 
 
+class SingletonType(type):
+    _instance_lock = threading.Lock()
+    def __call__(cls, *args, **kwargs):
+        if not hasattr(cls, "_instance"):
+            with SingletonType._instance_lock:
+                if not hasattr(cls, "_instance"):
+                    cls._instance = super(SingletonType,cls).__call__(*args, **kwargs)
+        return cls._instance
+
+class Foo(metaclass=SingletonType):
+    def __init__(self,name):
+        self.name = name
+
+
+# obj1 = Foo('name')
+# obj2 = Foo('name')
+# print(obj1,obj2)
+
 def singleton(cls):
     # 单下划线的作用是这个变量只能在当前模块里访问,仅仅是一种提示作用
     # 创建一个字典用来保存类的实例对象
@@ -193,7 +211,7 @@ def test_modbus_to_tcp():
     socketlist = []
     global  input,need_connect_list
     # 配置tcp服务端ip和端口
-
+    recvData=[]
     con = CThreadSetUpConnection()
     con.start()
     # Waiting until at least one device is connected
@@ -202,7 +220,7 @@ def test_modbus_to_tcp():
     master1 = mkpty()
     serPort = CThreadUartReceive(master1,input)
     serPort.start()
-
+         
     while True:
         while len(input)>0:
 
