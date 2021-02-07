@@ -220,7 +220,7 @@ def test_modbus_to_tcp():
     master1 = mkpty()
     serPort = CThreadUartReceive(master1,input)
     serPort.start()
-         
+             
     while True:
         while len(input)>0:
 
